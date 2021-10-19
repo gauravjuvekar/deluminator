@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Copyright 2021, Gaurav Juvekar
+# SPDX-License-Identifier: MIT
+
+set -Eeuo pipefail
+set -x
+
+CONFIG=~/.config/deluminator
+
+if [[ "$1" = "--dark" ]]; then
+    for script in "$CONFIG"/dark.d/*; do
+        $script
+    done
+elif [[ "$1" = "--light" ]]; then
+    for script in "$CONFIG"/light.d/*; do
+        $script
+    done
+fi
