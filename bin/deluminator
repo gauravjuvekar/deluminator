@@ -8,6 +8,16 @@ set -x
 
 CONFIG=~/.config/deluminator
 
+
+function _identify {
+    if echo "$1" | grep -qi 'dark' ; then
+        echo 'dark'
+    else
+        echo 'light'
+    fi
+}
+
+
 if [[ "$1" = "--dark" ]]; then
     for script in "$CONFIG"/dark.d/*; do
         $script
@@ -16,4 +26,14 @@ elif [[ "$1" = "--light" ]]; then
     for script in "$CONFIG"/light.d/*; do
         $script
     done
+elif [[ "$1" = "--monitor" ]]; then
+    current=$(gsettings get org.cinnamon.desktop.interface  gtk-theme | \
+              tr -d \')
+    _identify "$current"
+
+   gsettings monitor org.cinnamon.desktop.interface gtk-theme | \
+       stdbuf -oL sed -re 's/gtk-theme:\s+'\''(.*)'\''.*/\1/' | \
+       while read line; do
+           _identify "$line"
+       done
 fi
