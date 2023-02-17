@@ -1,10 +1,11 @@
-" Copyright 2021, Gaurav Juvekar
+" Copyright 2021-2023, Gaurav Juvekar
 " SPDX-License-Identifier: MIT
 
 if !exists("g:deluminator#themes")
     let g:deluminator#themes = {
-                \ "light": "solarized8_light",
-                \ "dark": "solarized8_dark"}
+\       "light": "solarized8_light"
+\     , "dark": "solarized8_dark"
+\   }
 endif
 
 
@@ -23,7 +24,7 @@ function! deluminator#start()
     endif
 
     let job = job_start("deluminator --monitor",
-                \       {"out_cb": "deluminator#Callback"})
+\                       {"out_cb": "deluminator#Callback"})
 
     if job_status(job) ==? "run"
         let g:deluminator_running = 1
