@@ -9,6 +9,9 @@ if !exists("g:deluminator#themes")
 endif
 
 
+if !has('nvim')
+
+
 function! deluminator#Callback(channel, msg)
     if a:msg ==? 'dark'
         execute 'colorscheme ' . g:deluminator#themes["dark"]
@@ -16,7 +19,6 @@ function! deluminator#Callback(channel, msg)
         execute 'colorscheme ' . g:deluminator#themes["light"]
     endif
 endfunction
-
 
 function! deluminator#start()
     if exists("g:deluminator_running")
@@ -32,3 +34,36 @@ function! deluminator#start()
         execute 'colorscheme ' . g:deluminator#themes["light"]
     endif
 endfunction
+
+
+else
+
+
+function! deluminator#Callback(job_id, data, event)
+    if a:event == 'stdout'
+        let l:light_or_dark = trim(join(a:data, ''))
+        if l:light_or_dark ==? 'dark'
+            execute 'colorscheme ' . g:deluminator#themes["dark"]
+        elseif l:light_or_dark ==? 'light'
+            execute 'colorscheme ' . g:deluminator#themes["light"]
+        endif
+    endif
+endfunction
+
+function! deluminator#start()
+    if exists("g:deluminator_running")
+        return
+    endif
+
+    let job = jobstart("deluminator --monitor",
+\                      {"on_stdout": function("deluminator#Callback")})
+
+    if jobwait([job], 0)[0] == -1
+        let g:deluminator_running = 1
+    else
+        execute 'colorscheme ' . g:deluminator#themes["light"]
+    endif
+endfunction
+
+
+endif
